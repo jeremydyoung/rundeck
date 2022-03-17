@@ -94,7 +94,7 @@ class AuditEventsService
         // Initialize plugin
         plugin.instance.init()
 
-        return new DescribedPlugin<AuditEventListenerPlugin>(plugin.instance, pluginDescription, pluginDescription.name)
+        return new DescribedPlugin<AuditEventListenerPlugin>(plugin.instance, pluginDescription, pluginDescription.name,null,null)
     }
 
     /**
