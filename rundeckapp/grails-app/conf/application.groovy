@@ -57,7 +57,7 @@ environments {
         grails.profiler.disable=true
         dataSource {
             dbCreate = "none"
-            url = "jdbc:h2:file:./db/testDb;NON_KEYWORDS=MONTH,HOUR,MINUTE,YEAR,SECONDS"
+            url = "jdbc:h2:file:./db/testDb;NON_KEYWORDS=MONTH,HOUR,MINUTE,YEAR,SECONDS;DATABASE_TO_LOWER=TRUE"
         }
         grails.plugin.databasemigration.updateOnStart=true
 
