@@ -234,7 +234,7 @@ rss.enabled=false
 server.address=0.0.0.0
 grails.serverURL=${RUNDECK_URL}
 dataSource.dbCreate = none
-dataSource.url = jdbc:h2:file:/home/rundeck/server/data/grailsdb;DB_CLOSE_ON_EXIT=FALSE;NON_KEYWORDS=MONTH,HOUR,MINUTE,YEAR,SECONDS;DATABASE_TO_LOWER=TRUE
+dataSource.url = jdbc:h2:file:/home/rundeck/server/data/grailsdb;DB_CLOSE_ON_EXIT=FALSE;NON_KEYWORDS=MONTH,HOUR,MINUTE,YEAR,SECONDS,SIZE,FILTER
 grails.plugin.databasemigration.updateOnStart=true
 
 #dataSource.properties.removeAbandoned=true
