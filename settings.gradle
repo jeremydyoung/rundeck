@@ -15,7 +15,20 @@
  */
 
  plugins {
-    id "com.gradle.enterprise" version "3.7.1"
+    id "com.gradle.enterprise" version "3.10.2"
+    id "com.gradle.common-custom-user-data-gradle-plugin" version "1.7.2"
+}
+
+gradleEnterprise {
+    server = "https://ec2-3-85-245-18.compute-1.amazonaws.com"
+    allowUntrustedServer = true // unless a trusted certificate is already configured in GE
+    buildScan {
+        publishAlways()
+        capture {
+            taskInputFiles = true
+        }
+        uploadInBackground = System.getenv("CI") == null // adjust to your CI provider
+    }
 }
 
 include	'rundeck-storage',
@@ -51,3 +64,5 @@ include	'rundeck-storage',
     'grails-webhooks',
     'grails-execution-mode-timer',
     'docker'
+
+rootProject.name = 'rundeck'
