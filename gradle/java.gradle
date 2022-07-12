@@ -35,7 +35,7 @@ task testJar(type: Jar) {
 }
 
 // produce a jar file for our source files
-task sourceJar(type: Jar) {
+task sourcesJar(type: Jar) {
     classifier = 'sources'
     from sourceSets.main.java
 }
@@ -55,6 +55,6 @@ if (JavaVersion.current().isJava8Compatible()) {
 // add all of the artifacts above to our archives list
 artifacts {
     archives testJar
-    archives sourceJar
+    archives sourcesJar
     archives javadocJar
 }
