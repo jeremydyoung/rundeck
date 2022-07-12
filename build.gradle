@@ -140,7 +140,7 @@ subprojects {
 
 def buildConf  = new org.yaml.snakeyaml.Yaml().load( file('./build.yaml').newDataInputStream() )
 project(':rundeckapp') {
-    it.ext.bundledPlugins = buildConf.rundeck.plugins
+    it.ext.bundledPlugins = buildConf?.rundeck?.plugins?:[]
 
     it.ext.bundledPlugins += [
         project(':plugins:script-plugin'),
