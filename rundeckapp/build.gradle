@@ -399,16 +399,17 @@ abstract class CreatePluginBundleTask extends DefaultTask {
     }
 }
 
-tasks.register('createPluginProperties', CreatePluginBundleTask) {
+def pluginPropertiesTask = tasks.register('createPluginProperties', CreatePluginBundleTask) {
     dependsOn configurations.pluginFiles
-    destinationDir = file(layout.buildDirectory.dir("WEB-INF/rundeck/plugins"))
+    destinationDir = file(layout.buildDirectory.dir("pluginProperties"))
     manifestName = "manifest.properties"
     pluginConfig = configurations.pluginFiles
 }
 
-task copyPluginLibs(type: Copy) {
+tasks.register('copyPluginLibs', Copy) {
     dependsOn createPluginProperties
     from configurations.pluginFiles
+    from pluginPropertiesTask
     into layout.buildDirectory.dir("WEB-INF/rundeck/plugins")
 }
 
