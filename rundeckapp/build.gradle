@@ -564,3 +564,8 @@ if (project.hasProperty('signing.keyId') && project.hasProperty('signing.passwor
     }
 }
 
+normalization {
+    runtimeClasspath {
+        ignore '**/grails.build.info'
+    }
+}
