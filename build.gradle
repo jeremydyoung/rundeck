@@ -126,6 +126,11 @@ allprojects {
         exclude group: 'ch.qos.logback', module: 'logback-classic'
         exclude group: 'ch.qos.logback', module: 'logback-core'
     }
+    normalization {
+        runtimeClasspath {
+            ignore '**/application.properties'
+        }
+    }
 }
 
 /**
