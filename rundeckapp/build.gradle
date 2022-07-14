@@ -292,14 +292,34 @@ bootRun {
     systemProperty "rundeck.server.logDir", System.getProperty("logRoot")+"/server/logs"
 }
 
+class GroovyOptionsProvider implements CommandLineArgumentProvider {
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    File openApiAdditionalFiles
+
+    @Input
+    String memoryAmount
+
+    @Override
+    Iterable<String> asArguments() {
+        def args = ["-Xmx${memoryAmount}".toString(),"-Dmicronaut.openapi.additional.files=${openApiAdditionalFiles.absolutePath}".toString()]
+        println "Creating args: ${args}"
+        return args
+    }
+}
+
+def prepareOpenApi = tasks.register('prepareOpenApi') {
+    outputs.dir(layout.buildDirectory.dir('openapi').get().asFile).withPropertyName('openApiAdditionalFiles')
+    doLast {
+        outputs.files.each { it.mkdirs() }
+    }
+}
+
 tasks.withType(GroovyCompile) {
-    def additionalSpecDir = new File(project.buildDir, 'openapi')
-    doFirst {
-        additionalSpecDir.mkdirs()
-    }
-    configure(groovyOptions) {
-        forkOptions.jvmArgs = ['-Xmx1024m',"-Dmicronaut.openapi.additional.files=${additionalSpecDir.absolutePath}".toString()]
-    }
+    dependsOn prepareOpenApi
+    groovyOptions.forkOptions.jvmArgumentProviders.add(
+        new GroovyOptionsProvider(memoryAmount: '1024m', openApiAdditionalFiles: prepareOpenApi.get().outputs.files[0])
+    )
 }
 
 tasks.withType(Test) {
