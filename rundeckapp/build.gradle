@@ -293,18 +293,21 @@ bootRun {
 }
 
 class GroovyOptionsProvider implements CommandLineArgumentProvider {
-    @InputDirectory
-    @PathSensitive(PathSensitivity.RELATIVE)
-    File openApiAdditionalFiles
+    @Internal
+    TaskProvider<?> openApiTask
 
     @Input
     String memoryAmount
 
     @Override
     Iterable<String> asArguments() {
-        def args = ["-Xmx${memoryAmount}".toString(),"-Dmicronaut.openapi.additional.files=${openApiAdditionalFiles.absolutePath}".toString()]
-        println "Creating args: ${args}"
-        return args
+        File dest = openApiTask.get().outputs.fileProperties.find {
+            it.propertyName == 'openApiAdditionalFiles'
+        }.outputFile
+        return [
+            "-Xmx${memoryAmount}".toString(),
+            "-Dmicronaut.openapi.additional.files=${dest.absolutePath}".toString()
+        ]
     }
 }
 
@@ -318,7 +321,7 @@ def prepareOpenApi = tasks.register('prepareOpenApi') {
 tasks.withType(GroovyCompile) {
     dependsOn prepareOpenApi
     groovyOptions.forkOptions.jvmArgumentProviders.add(
-        new GroovyOptionsProvider(memoryAmount: '1024m', openApiAdditionalFiles: prepareOpenApi.get().outputs.files[0])
+        new GroovyOptionsProvider(memoryAmount: '1024m', openApiTask: prepareOpenApi)
     )
 }
 
@@ -587,5 +590,7 @@ if (project.hasProperty('signing.keyId') && project.hasProperty('signing.passwor
 normalization {
     runtimeClasspath {
         ignore '**/grails.build.info'
+        ignore '**/views.properties'
+        ignore '**/gsp*'
     }
 }
