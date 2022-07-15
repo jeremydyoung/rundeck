@@ -129,6 +129,7 @@ allprojects {
     normalization {
         runtimeClasspath {
             ignore '**/application.properties'
+            ignore '**/views.properties'
         }
     }
 }
