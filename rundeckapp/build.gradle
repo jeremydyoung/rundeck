@@ -293,35 +293,35 @@ bootRun {
 }
 
 class GroovyOptionsProvider implements CommandLineArgumentProvider {
-    @Internal
-    TaskProvider<?> openApiTask
+    @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
+    Provider<Directory> openApiAdditionalFiles
 
     @Input
     String memoryAmount
 
     @Override
     Iterable<String> asArguments() {
-        File dest = openApiTask.get().outputs.fileProperties.find {
-            it.propertyName == 'openApiAdditionalFiles'
-        }.outputFile
         return [
             "-Xmx${memoryAmount}".toString(),
-            "-Dmicronaut.openapi.additional.files=${dest.absolutePath}".toString()
+            "-Dmicronaut.openapi.additional.files=${openApiAdditionalFiles.get().asFile.absolutePath}".toString()
         ]
     }
 }
 
+def openapiDir = layout.buildDirectory.dir('openapi')
+
 def prepareOpenApi = tasks.register('prepareOpenApi') {
-    outputs.dir(layout.buildDirectory.dir('openapi').get().asFile).withPropertyName('openApiAdditionalFiles')
+    outputs.dir(openapiDir).withPropertyName('openApiAdditionalFiles')
     doLast {
-        outputs.files.each { it.mkdirs() }
+        openapiDir.get().asFile.mkdirs()
     }
 }
 
 tasks.withType(GroovyCompile) {
     dependsOn prepareOpenApi
     groovyOptions.forkOptions.jvmArgumentProviders.add(
-        new GroovyOptionsProvider(memoryAmount: '1024m', openApiTask: prepareOpenApi)
+        new GroovyOptionsProvider(memoryAmount: '1024m', openApiAdditionalFiles: openapiDir)
     )
 }
 
