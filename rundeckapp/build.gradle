@@ -378,8 +378,8 @@ abstract class CreatePluginBundleTask extends DefaultTask {
     @TaskAction
     def execute() {
         println "copying plugin libs"
-        File destinationDir = destinationDir.get().asFile.absoluteFile
-        File manifestFile = new File(destinationDir, manifestName.get())
+        File destDir = destinationDir.get().asFile.absoluteFile
+        File manifestFile = new File(destDir, manifestName.get())
 
         def fileList=[]
         def artifacts = pluginConfig.get().incoming.artifacts
@@ -409,7 +409,7 @@ abstract class CreatePluginBundleTask extends DefaultTask {
                 fileProps['plugin.filename'] = f
 
                 //write properties file
-                new File(destinationDir, pluginFile.name + '.properties').withOutputStream {
+                new File(destDir, pluginFile.name + '.properties').withOutputStream {
                     fileProps.store(it, "generated manifest")
                 }
             }
