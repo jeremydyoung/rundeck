@@ -292,37 +292,10 @@ bootRun {
     systemProperty "rundeck.server.logDir", System.getProperty("logRoot")+"/server/logs"
 }
 
-class GroovyOptionsProvider implements CommandLineArgumentProvider {
-    @InputDirectory
-    @PathSensitive(PathSensitivity.RELATIVE)
-    Provider<Directory> openApiAdditionalFiles
-
-    @Input
-    String memoryAmount
-
-    @Override
-    Iterable<String> asArguments() {
-        return [
-            "-Xmx${memoryAmount}".toString(),
-            "-Dmicronaut.openapi.additional.files=${openApiAdditionalFiles.get().asFile.absolutePath}".toString()
-        ]
-    }
-}
-
-def openapiDir = layout.buildDirectory.dir('openapi')
-
-def prepareOpenApi = tasks.register('prepareOpenApi') {
-    outputs.dir(openapiDir).withPropertyName('openApiAdditionalFiles')
-    doLast {
-        openapiDir.get().asFile.mkdirs()
-    }
-}
-
 tasks.withType(GroovyCompile) {
-    dependsOn prepareOpenApi
-    groovyOptions.forkOptions.jvmArgumentProviders.add(
-        new GroovyOptionsProvider(memoryAmount: '1024m', openApiAdditionalFiles: openapiDir)
-    )
+    configure(groovyOptions) {
+        forkOptions.jvmArgs = ['-Xmx1024m']
+    }
 }
 
 tasks.withType(Test) {
@@ -377,7 +350,6 @@ abstract class CreatePluginBundleTask extends DefaultTask {
 
     @TaskAction
     def execute() {
-        println "copying plugin libs"
         File destDir = destinationDir.get().asFile.absoluteFile
         File manifestFile = new File(destDir, manifestName.get())
 
